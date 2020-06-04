@@ -1,0 +1,58 @@
+<!-- 集群配置,所有clickhouse示例都要加载此配置 -->
+<yandex>
+    <!--  替换镜像自带的集群配置  -->
+    <remote_servers replace="replace">
+        <perftest_3shards_2replicas desc="集群名称,代表下面三个分片，创建分布式表时通过perftest_3shards_2replicas指定使用这三个分片">
+            <!-- 分片 1 -->
+            <shard>
+                <!-- 表示数据落入这个分片的权重 -->
+                <weight>1</weight>
+                <!-- 可选参数,是否只将数据写入其中一个副本;默认为false,即写入所有副本,; -->
+                <!-- 默认为false,表示写入所有副本,在复制表的情况下可能会导致重复和不一致,所以这里一定要改为true,clickhouse分布式表只管写入一个副本,其余同步表的事情交给复制表和zookeeper来进行; -->
+                <internal_replication>true</internal_replication>
+                <!-- 这个分片的副本配置,这里只设置2个副本 -->
+                <replica>
+                    <host>ck-s01-r01</host>
+                    <port>9000</port>
+                </replica>
+                <replica>
+                    <host>ck-s01-r02</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+            <!-- 分片 2 -->
+            <shard>
+                <weight>1</weight>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>ck-s02-r01</host>
+                    <port>9000</port>
+                </replica>
+                <replica>
+                    <host>ck-s02-r02</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+            <!-- 分片 3 -->
+            <shard>
+                <weight>1</weight>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>ck-s03-r01</host>
+                    <port>9000</port>
+                </replica>
+                <replica>
+                    <host>ck-s03-r02</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </perftest_3shards_2replicas>
+    </remote_servers>
+
+    <zookeeper desc="zk服务器配置，用于保证各副本数据的最终一致性">
+        <node>
+            <host>zk-server</host>
+            <port>2181</port>
+        </node>
+    </zookeeper>
+</yandex>
